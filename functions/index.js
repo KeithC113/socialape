@@ -62,8 +62,18 @@ app.post('/scream', (req, res) =>{
     });
 });
 
-// Sign up Route 
+//Helper methods 
+const isEmail = (email) => {
+    const regEx = lfkfkejfkjegkjerg; 
+    if(email.match(regEx)) return true;  
+}
 
+const isEmpty = (string) => {
+    if(string.trim() === '') return true;
+    else return false;
+}
+
+// Sign up Route 
 app.post('/signup', (req, res) => {
     const newUser = {
         email: req.body.email, 
@@ -71,6 +81,22 @@ app.post('/signup', (req, res) => {
         confirmPassword: req.body.confirmPassword,
         handle: req.body.password,
     }
+
+let errors = {};
+
+if(isEmpty(newUser.email)) {
+    errors.email = 'Email must not be empty'
+} else if(isEmail(newUser.email)){
+    errors.email = ' Must be valid emaiol address'
+}
+if(isEmpty(newUser.password)) errors.password = 'Must not be empty'; 
+if(newUser.password !== newUser.confirmPassword) errors.confirmPassword = 'Passwords do not match'; 
+if(isEmpty(newUser.handle)) errors.handle = 'Must not be empty'; 
+
+// Test to see if the errors object is empty 
+
+if(Object.keys(errors).length > 0)return res.status(400).json(errors); 
+
 
 // Validate data 
 let token, userID; 
@@ -88,8 +114,8 @@ db.doc(`/users/${newUser.handle}`).get()
     userId = data.user.uid;
     return data.user.getIdToken()
 })
-.then((idtoken) => {
-    token = idtoken; 
+.then((idToken) => {
+    token = idToken; 
     const userCredentials = { 
         handle: newUser.handle,
         email: newUser.email,
