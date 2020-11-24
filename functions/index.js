@@ -18,4 +18,4 @@ app.post('/signup', signUp);
 app.post('/login', login)
 
 
-exports.api = functions.https.onRequest(app); 
+
